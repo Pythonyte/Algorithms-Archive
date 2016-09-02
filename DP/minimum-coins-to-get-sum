@@ -1,0 +1,47 @@
+'''
+sum=6
+coins=[1,2,3] # infinite supply for all type of denominations
+min coin way is [3,3] : 2 coins
+
+
+if we minimum coins for (5 - any coin) is C then for 5 it is : coins are C+1
+so our ques is for which coin : it would be true ( C would be minimum)
+So:   MinimumCoins(Sum - ithCoin) = Min [MinimumCoins(Sum - ithCoin]] + 1
+
+Base Condition: for 0 sum: we dont need coins : C(0)=0
+'''
+
+
+def MinimumCoins(sum,denominations):
+    if sum==0:return 0
+    mincoins=111111111111111111111111
+    for i in range(len(denominations)):
+        if denominations[i]<=sum:
+            coins=MinimumCoins(sum-denominations[i],denominations)+1
+            if coins < mincoins:
+                mincoins = coins
+    return mincoins
+
+def MemoizedMinimumCoinsCall(sum,denominations,mincointable):
+    if sum==0:return 0
+    mincoins=111111111111111111111111
+    for i in range(len(denominations)):
+        if denominations[i]<=sum:
+            if sum-denominations[i] in mincointable:
+                coins = mincointable[sum-denominations[i]]
+            else:
+                coins=MemoizedMinimumCoinsCall(sum-denominations[i],denominations,mincointable)+1
+            if coins < mincoins:
+                mincoins = coins
+    return mincoins
+
+def MemoizedMinimumCoins(sum,denominations):
+    mincointable={}
+    return MemoizedMinimumCoinsCall(sum,denominations,mincointable)
+
+
+
+
+print(MinimumCoins(7,[1]))
+print(MemoizedMinimumCoins(7,[1]))
+
