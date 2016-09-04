@@ -1,0 +1,59 @@
+def coinchange(sum,count):
+    if sum == 0:return 1
+    if sum>0 and count<0: return 0
+    if sum<0: return 0
+
+    return coinchange(sum,count-1) + coinchange(sum-denom[count],count)
+
+
+def Memoized_coinchange(sum,count):
+    global store
+    if sum == 0:return 1
+    if sum>0 and count<0: return 0
+    if sum<0: return 0
+
+    exckey=str(sum)+"_"+str(count-1)
+    inckey=str(sum-denom[count])+"_"+str(count)
+
+    if exckey in store:exclude=store[exckey]
+    else:
+        exclude=Memoized_coinchange(sum,count-1)
+        store[exckey]=exclude
+
+    if inckey in store:include=store[inckey]
+    else:
+        include=Memoized_coinchange(sum-denom[count],count)
+        store[inckey]=include
+
+    return include+exclude
+
+
+
+def DP_coinchanges(sum,coins):
+    # coins are columns and sum are rows
+    soln=[[None]*(sum+1) for i in range(len(coins)+1)]
+
+    #if amount=0 then just return 1 way to make the change
+    for row in soln:row[0]=1
+
+    #if no coins given, 0 ways to change the amount
+    soln[0][1:]=[0]*sum
+
+    for i in range(1,len(coins)+1):
+        for j in range(1,sum+1):
+            #check if the coin value is less than the amount needed
+            if coins[i-1] <= j:
+                #reduce the amount by coin value and use the subproblem solution (amount-v[i]) and add the solution from the top to it
+                soln[i][j]=soln[i-1][j]+soln[i][j-coins[i-1]]
+            else:
+                # exclude solution for ith coin
+                soln[i][j]=soln[i-1][j]
+
+    # Print updated soln matrix
+    for row in soln:print(row)
+
+    #return the output.
+    return soln[len(coins)][sum]
+
+
+
